@@ -16,7 +16,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         _currentUserService = currentUserService;
     }
 
-    public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<DeveloperProfile> DeveloperProfiles => Set<DeveloperProfile>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<SocialLink> SocialLinks => Set<SocialLink>();
@@ -29,13 +28,17 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Global Query Filter for Multi-Tenancy
-        modelBuilder.Entity<DeveloperProfile>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
-        modelBuilder.Entity<Project>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
-        modelBuilder.Entity<SocialLink>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
-        modelBuilder.Entity<Skill>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
-        modelBuilder.Entity<SkillEndorsement>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
-        modelBuilder.Entity<User>().HasQueryFilter(u => !_currentUserService.TenantId.HasValue || u.TenantId == _currentUserService.TenantId);
+        // Configure unique index on User.Username
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        // Configure 1-to-1 relationship between User and DeveloperProfile
+        modelBuilder.Entity<DeveloperProfile>()
+            .HasOne(p => p.User)
+            .WithOne(u => u.DeveloperProfile)
+            .HasForeignKey<DeveloperProfile>(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Configure relations
         modelBuilder.Entity<Follower>(entity =>
@@ -64,7 +67,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var currentTenantId = _currentUserService.TenantId;
         var currentUserId = _currentUserService.UserId ?? "System";
 
         foreach (var entry in ChangeTracker.Entries())
@@ -80,24 +82,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                 {
                     baseEntity.LastModifiedAt = DateTime.UtcNow;
                     baseEntity.LastModifiedBy = currentUserId;
-                }
-            }
-
-            if (entry.Entity is IMustHaveTenant tenantEntity)
-            {
-                if (entry.State == EntityState.Added)
-                {
-                    if (tenantEntity.TenantId == Guid.Empty)
-                    {
-                        if (currentTenantId.HasValue)
-                        {
-                            tenantEntity.TenantId = currentTenantId.Value;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("Tenant context is required to save tenant-specific data.");
-                        }
-                    }
                 }
             }
         }

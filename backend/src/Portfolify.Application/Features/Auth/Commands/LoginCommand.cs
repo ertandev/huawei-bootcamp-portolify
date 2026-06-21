@@ -40,10 +40,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
     public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Find user globally, including their Tenant (ignoring multi-tenant query filters during login verification)
+        // Find user globally
         var user = await _context.Users
-            .IgnoreQueryFilters()
-            .Include(u => u.Tenant)
             .FirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower(), cancellationToken);
 
         if (user == null)
@@ -59,20 +57,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
             throw new InvalidOperationException("Invalid email or password.");
         }
 
-        if (!user.Tenant.IsActive)
-        {
-            throw new InvalidOperationException("This account/tenant is deactivated.");
-        }
-
         // Generate Token
-        var token = _jwtTokenGenerator.GenerateToken(user, user.Tenant.Identifier);
+        var token = _jwtTokenGenerator.GenerateToken(user);
 
         return new AuthResponseDto
         {
             Token = token,
             Email = user.Email,
-            TenantId = user.TenantId,
-            TenantIdentifier = user.Tenant.Identifier
+            UserId = user.Id,
+            Username = user.Username
         };
     }
 }

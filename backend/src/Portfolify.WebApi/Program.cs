@@ -2,7 +2,6 @@ using Portfolify.Application;
 using Portfolify.Application.Common.Interfaces;
 using Portfolify.Infrastructure;
 using Portfolify.Infrastructure.Persistence;
-using Portfolify.WebApi.Middlewares;
 using Portfolify.WebApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -109,9 +108,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Custom Middlewares
-app.UseMiddleware<TenantResolutionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

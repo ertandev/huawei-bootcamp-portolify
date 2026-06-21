@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolify.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Portfolify.Infrastructure.Persistence;
 
@@ -9,31 +10,35 @@ public static class ApplicationDbContextSeed
     {
         await context.Database.EnsureCreatedAsync();
 
-        if (!await context.Tenants.AnyAsync())
+        if (!await context.Users.AnyAsync())
         {
-            var tenant1 = new Tenant
+            var hasher = new PasswordHasher<User>();
+
+            var user1 = new User
             {
                 Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                Name = "v0rteX Devs",
-                Identifier = "vortex",
-                IsActive = true
+                Username = "vortex",
+                Email = "vortex@portfolify.com",
+                Role = "User"
             };
+            user1.PasswordHash = hasher.HashPassword(user1, "password123");
 
-            var tenant2 = new Tenant
+            var user2 = new User
             {
                 Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                Name = "John Doe Inc",
-                Identifier = "johndoe",
-                IsActive = true
+                Username = "johndoe",
+                Email = "john.doe@portfolify.com",
+                Role = "User"
             };
+            user2.PasswordHash = hasher.HashPassword(user2, "password123");
 
-            context.Tenants.AddRange(tenant1, tenant2);
+            context.Users.AddRange(user1, user2);
             await context.SaveChangesAsync();
 
             var profile1 = new DeveloperProfile
             {
                 Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                TenantId = tenant1.Id,
+                UserId = user1.Id,
                 FullName = "v0rteX Software Engineer",
                 Title = "Senior Backend Architect",
                 Bio = "Passionate about .NET 9, Clean Architecture, and microservices in PostgreSQL ecosystems. King of backend setups.",
@@ -45,7 +50,7 @@ public static class ApplicationDbContextSeed
             var profile2 = new DeveloperProfile
             {
                 Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
-                TenantId = tenant2.Id,
+                UserId = user2.Id,
                 FullName = "John Doe",
                 Title = "Full Stack Engineer",
                 Bio = "Building elegant mobile cards and SaaS platforms. Tech enthusiast, gamer, open-source contributor.",
@@ -58,7 +63,6 @@ public static class ApplicationDbContextSeed
 
             var project1 = new Project
             {
-                TenantId = tenant1.Id,
                 DeveloperProfileId = profile1.Id,
                 Title = "Portfolify Backend Engine",
                 Description = "Clean Architecture, CQRS (MediatR), and multi-tenant SaaS backend foundation.",
@@ -70,7 +74,6 @@ public static class ApplicationDbContextSeed
 
             var project2 = new Project
             {
-                TenantId = tenant1.Id,
                 DeveloperProfileId = profile1.Id,
                 Title = "Antigravity IDE Assistant",
                 Description = "A highly intelligent, agentic coding assistant automating multi-layer architectural migrations.",
@@ -82,7 +85,6 @@ public static class ApplicationDbContextSeed
 
             var link1 = new SocialLink
             {
-                TenantId = tenant1.Id,
                 DeveloperProfileId = profile1.Id,
                 PlatformName = "GitHub",
                 Url = "https://github.com/vortex",
@@ -91,7 +93,6 @@ public static class ApplicationDbContextSeed
 
             var link2 = new SocialLink
             {
-                TenantId = tenant1.Id,
                 DeveloperProfileId = profile1.Id,
                 PlatformName = "LinkedIn",
                 Url = "https://linkedin.com/in/vortex-dev",
@@ -103,7 +104,6 @@ public static class ApplicationDbContextSeed
             var skill1 = new Skill
             {
                 Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
-                TenantId = tenant1.Id,
                 DeveloperProfileId = profile1.Id,
                 Name = ".NET 9 / ASP.NET Core",
                 ProficiencyLevel = 95,
@@ -113,7 +113,6 @@ public static class ApplicationDbContextSeed
             var skill2 = new Skill
             {
                 Id = Guid.Parse("66666666-6666-6666-6666-666666666666"),
-                TenantId = tenant1.Id,
                 DeveloperProfileId = profile1.Id,
                 Name = "PostgreSQL",
                 ProficiencyLevel = 90,
@@ -125,7 +124,6 @@ public static class ApplicationDbContextSeed
 
             var endorsement = new SkillEndorsement
             {
-                TenantId = tenant1.Id,
                 SkillId = skill1.Id,
                 EndorsedById = profile2.Id,
                 Comment = "Absolutely brilliant at Clean Architecture and C# optimizations!"

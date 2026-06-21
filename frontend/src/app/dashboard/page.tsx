@@ -80,7 +80,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<ProfileDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [tenantIdentifier, setTenantIdentifier] = useState("");
+  const [username, setUsername] = useState("");
 
   // Edit Profile Form State
   const [fullName, setFullName] = useState("");
@@ -119,7 +119,7 @@ export default function DashboardPage() {
     if (typeof window === "undefined") return;
 
     const storedToken = localStorage.getItem("token");
-    const storedTenant = localStorage.getItem("tenantIdentifier");
+    const storedUsername = localStorage.getItem("username");
 
     if (!storedToken) {
       router.push("/login");
@@ -127,18 +127,13 @@ export default function DashboardPage() {
     }
 
     setToken(storedToken);
-    setTenantIdentifier(storedTenant || "");
+    setUsername(storedUsername || "");
 
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-        // Using dynamic resolution. Our api.ts automatically resolves headers based on resolved subdomains
-        // But since we are logged in, we set the X-Tenant header based on our stored tenantIdentifier
-        const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-          headers: {
-            "X-Tenant": storedTenant || "",
-          },
-        });
+        // Using JWT token authentication details lookup
+        const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
         
         const data = response.data;
         setProfile(data);
@@ -165,8 +160,8 @@ export default function DashboardPage() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
-    localStorage.removeItem("tenantId");
-    localStorage.removeItem("tenantIdentifier");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
     router.push("/login");
   };
 
@@ -188,17 +183,13 @@ export default function DashboardPage() {
         avatarUrl: avatarUrl || null,
         resumeUrl: resumeUrl || null,
         blogUrl: blogUrl || null,
-      }, {
-        headers: { "X-Tenant": tenantIdentifier }
       });
 
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 3000);
       
       // Reload profile
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err: any) {
       console.error(err);
@@ -223,8 +214,6 @@ export default function DashboardPage() {
         projectUrl: projectDemo || null,
         displayOrder: profile.projects.length + 1,
         isFeatured: projectIsFeatured,
-      }, {
-        headers: { "X-Tenant": tenantIdentifier }
       });
 
       // Clear states
@@ -236,9 +225,7 @@ export default function DashboardPage() {
       setProjectModalOpen(false);
 
       // Reload
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err) {
       console.error(err);
@@ -251,14 +238,10 @@ export default function DashboardPage() {
     if (!confirm("Bu projeyi silmek istediğinize emin misiniz?")) return;
 
     try {
-      await api.delete(`/Project/${projectId}`, {
-        headers: { "X-Tenant": tenantIdentifier }
-      });
+      await api.delete(`/Project/${projectId}`);
 
       // Reload
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err) {
       console.error(err);
@@ -277,8 +260,6 @@ export default function DashboardPage() {
         name: skillName,
         proficiencyLevel: skillLevel,
         displayOrder: profile.skills.length + 1,
-      }, {
-        headers: { "X-Tenant": tenantIdentifier }
       });
 
       setSkillName("");
@@ -286,9 +267,7 @@ export default function DashboardPage() {
       setSkillModalOpen(false);
 
       // Reload
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err) {
       console.error(err);
@@ -301,14 +280,10 @@ export default function DashboardPage() {
     if (!confirm("Bu yeteneği silmek istediğinize emin misiniz?")) return;
 
     try {
-      await api.delete(`/Skill/${skillId}`, {
-        headers: { "X-Tenant": tenantIdentifier }
-      });
+      await api.delete(`/Skill/${skillId}`);
 
       // Reload
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err) {
       console.error(err);
@@ -326,17 +301,13 @@ export default function DashboardPage() {
         developerProfileId: profile.id,
         platformName: socialPlatform,
         url: socialUrl,
-      }, {
-        headers: { "X-Tenant": tenantIdentifier }
       });
 
       setSocialUrl("");
       setSocialModalOpen(false);
 
       // Reload
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err) {
       console.error(err);
@@ -349,14 +320,10 @@ export default function DashboardPage() {
     if (!confirm("Bu sosyal medya bağlantısını silmek istediğinize emin misiniz?")) return;
 
     try {
-      await api.delete(`/SocialLink/${socialId}`, {
-        headers: { "X-Tenant": tenantIdentifier }
-      });
+      await api.delete(`/SocialLink/${socialId}`);
 
       // Reload
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details", {
-        headers: { "X-Tenant": tenantIdentifier },
-      });
+      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
       setProfile(response.data);
     } catch (err) {
       console.error(err);
@@ -384,11 +351,11 @@ export default function DashboardPage() {
             Portfolify
           </span>
           <Badge className="bg-violet-950/80 border-violet-850 text-violet-400 font-mono text-[10px] ml-2">
-            Workspace: {tenantIdentifier}
+            Kullanıcı Adı: {username}
           </Badge>
         </div>
         <div className="flex items-center gap-4">
-          <Link href={`/?tenant=${tenantIdentifier}`} target="_blank">
+          <Link href={`/?user=${username}`} target="_blank">
             <Button variant="outline" className="border-slate-800 bg-slate-900/50 hover:bg-slate-800 text-slate-300 gap-1.5">
               Profilimi Gör <ExternalLink className="h-3.5 w-3.5" />
             </Button>

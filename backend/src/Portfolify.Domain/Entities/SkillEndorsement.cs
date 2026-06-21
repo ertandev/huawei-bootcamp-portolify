@@ -2,10 +2,8 @@ using Portfolify.Domain.Common;
 
 namespace Portfolify.Domain.Entities;
 
-public class SkillEndorsement : BaseEntity, IMustHaveTenant
+public class SkillEndorsement : BaseEntity
 {
-    public Guid TenantId { get; set; }
-    
     public Guid SkillId { get; set; }
     public Skill Skill { get; set; } = null!;
     

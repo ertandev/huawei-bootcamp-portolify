@@ -7,12 +7,11 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Lock, Mail, Loader2, ArrowLeft, Globe, User, Briefcase, LayoutGrid } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowLeft, Globe, User, Briefcase } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [tenantName, setTenantName] = useState("");
-  const [tenantIdentifier, setTenantIdentifier] = useState("");
+  const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [title, setTitle] = useState("");
   const [email, setEmail] = useState("");
@@ -24,10 +23,10 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    // Subdomain validation
-    const subdomainRegex = /^[a-z0-9-]+$/;
-    if (!subdomainRegex.test(tenantIdentifier)) {
-      setError("Çalışma alanı adresi sadece küçük harf, rakam ve tire (-) içerebilir.");
+    // Username validation
+    const usernameRegex = /^[a-z0-9-]+$/;
+    if (!usernameRegex.test(username)) {
+      setError("Kullanıcı adı sadece küçük harf, rakam ve tire (-) içerebilir.");
       return;
     }
 
@@ -35,21 +34,20 @@ export default function RegisterPage() {
 
     try {
       const response = await api.post("/Auth/register", {
-        tenantName,
-        tenantIdentifier: tenantIdentifier.toLowerCase(),
+        username: username.toLowerCase(),
         email,
         password,
         fullName,
         title,
       });
 
-      const { token, tenantId, tenantIdentifier: resolvedIdentifier } = response.data;
+      const { token, userId, username: resolvedUsername } = response.data;
 
       // Store in local storage
       localStorage.setItem("token", token);
       localStorage.setItem("email", email);
-      localStorage.setItem("tenantId", tenantId);
-      localStorage.setItem("tenantIdentifier", resolvedIdentifier);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("username", resolvedUsername);
 
       // Redirect to dashboard
       router.push("/dashboard");
@@ -96,41 +94,23 @@ export default function RegisterPage() {
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Workspace Name */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Alan Adı (Workspace)</label>
-                  <div className="relative">
-                    <LayoutGrid className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
-                    <Input
-                      type="text"
-                      placeholder="v0rteX Geliştirici Kartı"
-                      value={tenantName}
-                      onChange={(e) => setTenantName(e.target.value)}
-                      required
-                      className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
-                    />
-                  </div>
+              {/* Username */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Kullanıcı Adı (Username)</label>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <Input
+                    type="text"
+                    placeholder="vortex"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase())}
+                    required
+                    className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
+                  />
                 </div>
-
-                {/* Subdomain Identifier */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Çalışma Alanı Adresi (URL)</label>
-                  <div className="relative">
-                    <Globe className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
-                    <Input
-                      type="text"
-                      placeholder="vortex"
-                      value={tenantIdentifier}
-                      onChange={(e) => setTenantIdentifier(e.target.value.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase())}
-                      required
-                      className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
-                    />
-                  </div>
-                  <span className="text-[11px] text-slate-500 block">
-                    Adresiniz: <span className="text-violet-400 font-mono">{tenantIdentifier || "workspace"}.localhost:3000</span>
-                  </span>
-                </div>
+                <span className="text-[11px] text-slate-500 block">
+                  Profil Adresiniz: <span className="text-violet-400 font-mono">http://localhost:3000/?user={username || "kullanici-adi"}</span>
+                </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

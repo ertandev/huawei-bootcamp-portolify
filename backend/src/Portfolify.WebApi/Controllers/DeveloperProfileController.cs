@@ -42,12 +42,11 @@ public class DeveloperProfileController : ApiControllerBase
 
     [AllowAnonymous]
     [HttpGet("details")]
-    public async Task<ActionResult<DeveloperProfileDetailsDto>> GetDetails()
+    public async Task<ActionResult<DeveloperProfileDetailsDto>> GetDetails([FromQuery] string? username)
     {
-        // Resolves dynamically based on subdomain/header of the current tenant request context
-        var result = await Mediator.Send(new GetDeveloperProfileDetailsQuery());
+        var result = await Mediator.Send(new GetDeveloperProfileDetailsQuery { Username = username });
         if (result == null)
-            return NotFound("No profile found for this tenant.");
+            return NotFound("No profile found.");
 
         return result;
     }

@@ -27,13 +27,13 @@ export default function LoginPage() {
         password,
       });
 
-      const { token, tenantId, tenantIdentifier } = response.data;
+      const { token, userId, username } = response.data;
 
       // Store in local storage
       localStorage.setItem("token", token);
       localStorage.setItem("email", email);
-      localStorage.setItem("tenantId", tenantId);
-      localStorage.setItem("tenantIdentifier", tenantIdentifier);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("username", username);
 
       // Redirect to dashboard
       router.push("/dashboard");

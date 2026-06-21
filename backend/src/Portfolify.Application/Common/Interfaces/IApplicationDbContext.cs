@@ -5,7 +5,6 @@ namespace Portfolify.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    DbSet<Tenant> Tenants { get; }
     DbSet<DeveloperProfile> DeveloperProfiles { get; }
     DbSet<Project> Projects { get; }
     DbSet<SocialLink> SocialLinks { get; }

@@ -31,7 +31,7 @@ public class GetDeveloperProfileQueryHandler : IRequestHandler<GetDeveloperProfi
         return new DeveloperProfileDto
         {
             Id = profile.Id,
-            TenantId = profile.TenantId,
+            UserId = profile.UserId,
             FullName = profile.FullName,
             Title = profile.Title,
             Bio = profile.Bio,

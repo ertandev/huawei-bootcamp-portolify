@@ -36,14 +36,12 @@ public class FollowDeveloperCommandHandler : IRequestHandler<FollowDeveloperComm
             throw new InvalidOperationException("You cannot follow yourself.");
 
         var followerExists = await _context.DeveloperProfiles
-            .IgnoreQueryFilters()
             .AnyAsync(p => p.Id == request.FollowerId, cancellationToken);
 
         if (!followerExists)
             throw new KeyNotFoundException($"Follower profile '{request.FollowerId}' was not found.");
 
         var followedExists = await _context.DeveloperProfiles
-            .IgnoreQueryFilters()
             .AnyAsync(p => p.Id == request.FollowedId, cancellationToken);
 
         if (!followedExists)

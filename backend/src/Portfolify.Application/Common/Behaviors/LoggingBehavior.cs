@@ -20,10 +20,8 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         var requestName = typeof(TRequest).Name;
         var userId = _currentUserService.UserId ?? "Anonymous";
-        var tenantId = _currentUserService.TenantId?.ToString() ?? "Cross-Tenant";
-
-        _logger.LogInformation("Portfolify Request: {Name} | Tenant: {TenantId} | User: {UserId} | Request: {@Request}",
-            requestName, tenantId, userId, request);
+        _logger.LogInformation("Portfolify Request: {Name} | User: {UserId} | Request: {@Request}",
+            requestName, userId, request);
 
         var response = await next();
 

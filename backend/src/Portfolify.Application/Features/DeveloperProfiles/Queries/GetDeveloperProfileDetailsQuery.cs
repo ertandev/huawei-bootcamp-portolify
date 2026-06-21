@@ -1,11 +1,13 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Portfolify.Application.Common.Interfaces;
+using Portfolify.Domain.Entities;
 
 namespace Portfolify.Application.Features.DeveloperProfiles.Queries;
 
 public record GetDeveloperProfileDetailsQuery : IRequest<DeveloperProfileDetailsDto?>
 {
+    public string? Username { get; init; }
 }
 
 public class DeveloperProfileDetailsDto
@@ -74,20 +76,34 @@ public class GetDeveloperProfileDetailsQueryHandler : IRequestHandler<GetDevelop
 
     public async Task<DeveloperProfileDetailsDto?> Handle(GetDeveloperProfileDetailsQuery request, CancellationToken cancellationToken)
     {
-        var tenantId = _currentUserService.TenantId;
-        if (!tenantId.HasValue)
-        {
-            return null;
-        }
+        DeveloperProfile? profile = null;
 
-        var profile = await _context.DeveloperProfiles
-            .AsNoTracking()
-            .Include(p => p.Projects)
-            .Include(p => p.SocialLinks)
-            .Include(p => p.Skills)
-                .ThenInclude(s => s.Endorsements)
-                    .ThenInclude(e => e.EndorsedBy)
-            .FirstOrDefaultAsync(p => p.TenantId == tenantId.Value, cancellationToken);
+        if (!string.IsNullOrEmpty(request.Username))
+        {
+            profile = await _context.DeveloperProfiles
+                .AsNoTracking()
+                .Include(p => p.Projects)
+                .Include(p => p.SocialLinks)
+                .Include(p => p.Skills)
+                    .ThenInclude(s => s.Endorsements)
+                        .ThenInclude(e => e.EndorsedBy)
+                .FirstOrDefaultAsync(p => p.User.Username == request.Username.ToLower(), cancellationToken);
+        }
+        else
+        {
+            var userIdStr = _currentUserService.UserId;
+            if (Guid.TryParse(userIdStr, out var userId))
+            {
+                profile = await _context.DeveloperProfiles
+                    .AsNoTracking()
+                    .Include(p => p.Projects)
+                    .Include(p => p.SocialLinks)
+                    .Include(p => p.Skills)
+                        .ThenInclude(s => s.Endorsements)
+                            .ThenInclude(e => e.EndorsedBy)
+                    .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+            }
+        }
 
         if (profile == null)
             return null;

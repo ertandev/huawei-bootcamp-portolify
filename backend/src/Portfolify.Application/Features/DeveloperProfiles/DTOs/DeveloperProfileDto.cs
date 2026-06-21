@@ -3,7 +3,7 @@ namespace Portfolify.Application.Features.DeveloperProfiles.DTOs;
 public class DeveloperProfileDto
 {
     public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
+    public Guid UserId { get; set; }
     public string FullName { get; set; } = null!;
     public string Title { get; set; } = null!;
     public string Bio { get; set; } = null!;

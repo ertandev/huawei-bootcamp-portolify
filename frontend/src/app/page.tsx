@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { resolveTenant } from "@/lib/tenant";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -78,7 +77,7 @@ interface ProfileDetails {
 }
 
 export default function Home() {
-  const [tenant, setTenant] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -97,15 +96,18 @@ export default function Home() {
   // Share State
   const [copied, setCopied] = useState(false);
 
-  // Resolve tenant context on mount
+  // Resolve username context on mount
   useEffect(() => {
-    const resolved = resolveTenant();
-    setTenant(resolved);
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userParam = urlParams.get("user");
+      setUsername(userParam);
+    }
   }, []);
 
-  // Fetch developer profile if tenant resolved
+  // Fetch developer profile if username resolved
   useEffect(() => {
-    if (!tenant) {
+    if (!username) {
       setLoading(false);
       return;
     }
@@ -114,25 +116,25 @@ export default function Home() {
       try {
         setLoading(true);
         setError("");
-        const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
+        const response = await api.get<ProfileDetails>(`/DeveloperProfile/details?username=${username}`);
         setProfile(response.data);
         
         // Setup initial dummy follower values
-        const isVortex = tenant === "vortex";
+        const isVortex = username.toLowerCase() === "vortex";
         setFollowerCount(isVortex ? 154 : 42);
       } catch (err: any) {
         console.error(err);
-        setError("Profil yüklenirken bir hata oluştu veya çalışma alanı bulunamadı.");
+        setError("Profil yüklenirken bir hata oluştu veya kullanıcı bulunamadı.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, [tenant]);
+  }, [username]);
 
   const handleFollowToggle = async () => {
-    if (!profile) return;
+    if (!profile || !username) return;
     
     // Toggle locally first
     const nextState = !isFollowing;
@@ -140,7 +142,7 @@ export default function Home() {
     setFollowerCount((prev) => (nextState ? prev + 1 : prev - 1));
 
     try {
-      const followerId = tenant === "vortex" 
+      const followerId = username.toLowerCase() === "vortex" 
         ? "44444444-4444-4444-4444-444444444444" // John Doe
         : "33333333-3333-3333-3333-333333333333"; // v0rteX
 
@@ -162,9 +164,10 @@ export default function Home() {
   };
 
   const openEndorseDialog = (skillId: string, skillName: string) => {
+    if (!username) return;
     setSelectedSkill({ id: skillId, name: skillName });
     // Pick first opposite profile as default endorser
-    const defaultEndorser = tenant === "vortex" 
+    const defaultEndorser = username.toLowerCase() === "vortex" 
       ? "44444444-4444-4444-4444-444444444444" 
       : "33333333-3333-3333-3333-333333333333";
     setEndorserProfileId(defaultEndorser);
@@ -174,7 +177,7 @@ export default function Home() {
 
   const handleEndorseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profile || !selectedSkill) return;
+    if (!profile || !selectedSkill || !username) return;
 
     setSubmittingEndorsement(true);
     try {
@@ -185,7 +188,7 @@ export default function Home() {
       });
 
       // Reload profile details to show new endorsements
-      const response = await api.get<ProfileDetails>("/DeveloperProfile/details");
+      const response = await api.get<ProfileDetails>(`/DeveloperProfile/details?username=${username}`);
       setProfile(response.data);
       setEndorseModalOpen(false);
     } catch (err) {
@@ -216,8 +219,8 @@ export default function Home() {
     );
   }
 
-  // 2. Profile Details View (Multi-tenant mode)
-  if (tenant && profile) {
+  // 2. Profile Details View
+  if (username && profile) {
     const sortedProjects = [...profile.projects].sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
 
     return (
@@ -504,7 +507,7 @@ export default function Home() {
                   onChange={(e) => setEndorserProfileId(e.target.value)}
                   className="w-full rounded-md border border-slate-800 bg-slate-950 text-slate-100 p-2 focus:border-violet-500 focus:outline-none"
                 >
-                  {tenant === "vortex" ? (
+                  {username.toLowerCase() === "vortex" ? (
                     <option value="44444444-4444-4444-4444-444444444444">John Doe (Full Stack Engineer)</option>
                   ) : (
                     <option value="33333333-3333-3333-3333-333333333333">v0rteX Software Engineer (Senior Backend Architect)</option>
@@ -554,7 +557,7 @@ export default function Home() {
     );
   }
 
-  // 3. SaaS Landing Page (Default View when no tenant context)
+  // 3. SaaS Landing Page
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 font-sans overflow-x-hidden">
       {/* Background Gradients */}
@@ -595,8 +598,8 @@ export default function Home() {
               Akıllı Portfolyo Kartları
             </span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-450 leading-relaxed max-w-2xl mx-auto">
-            Kendinize özel subdomaninizde çalışan, projelerinizi sergileyebileceğiniz ve diğer yazılımcılardan doğrulanmış yetenek referansları toplayabileceğiniz SaaS dijital iş kartı.
+          <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto">
+            Kendinize özel kullanıcı adınızla çalışan, projelerinizi sergileyebileceğiniz ve diğer yazılımcılardan doğrulanmış yetenek referansları toplayabileceğiniz SaaS dijital iş kartı.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <Link href="/register">
@@ -604,8 +607,8 @@ export default function Home() {
                 Profilini Hemen Oluştur
               </Button>
             </Link>
-            <Link href="/?tenant=vortex">
-              <Button variant="outline" className="border-slate-800 bg-slate-900/30 hover:bg-slate-800 text-slate-355 text-lg px-8 py-7 rounded-2xl gap-2">
+            <Link href="/?user=vortex">
+              <Button variant="outline" className="border-slate-800 bg-slate-900/30 hover:bg-slate-800 text-slate-300 text-lg px-8 py-7 rounded-2xl gap-2">
                 Örnek Kartı İncele <ExternalLink className="h-4 w-4" />
               </Button>
             </Link>
@@ -617,9 +620,9 @@ export default function Home() {
           <Card className="border-slate-850 bg-slate-900/20 backdrop-blur-md hover:border-slate-800 transition-colors">
             <CardHeader className="space-y-3">
               <Globe className="h-10 w-10 text-violet-500" />
-              <CardTitle className="text-xl font-bold text-white">Özel Alan Adı (Subdomain)</CardTitle>
+              <CardTitle className="text-xl font-bold text-white">Özel Profil Adresi</CardTitle>
               <CardDescription className="text-slate-400 leading-relaxed">
-                Her geliştirici kendi belirlediği çalışma alanında (örneğin <span className="text-violet-400">adiniz.localhost:3000</span>) yayın yapar.
+                Her geliştirici kendi belirlediği kullanıcı adıyla (örneğin <span className="text-violet-400">http://localhost:3000/?user=adiniz</span>) yayın yapar.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -647,7 +650,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900/60 py-12 text-center text-slate-650 text-sm">
+      <footer className="border-t border-slate-900/60 py-12 text-center text-slate-500 text-sm">
         <p>© 2026 Portfolify SaaS. Tüm Hakları Saklıdır.</p>
       </footer>
     </div>

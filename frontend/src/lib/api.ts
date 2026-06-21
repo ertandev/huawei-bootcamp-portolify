@@ -1,5 +1,4 @@
 import axios from "axios";
-import { resolveTenant } from "./tenant";
 
 const api = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -10,13 +9,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    // 1. Add X-Tenant header dynamically from URL context
-    const tenant = resolveTenant();
-    if (tenant) {
-      config.headers["X-Tenant"] = tenant;
-    }
-
-    // 2. Add JWT Bearer token if logged in
+    // Add JWT Bearer token if logged in
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       if (token) {

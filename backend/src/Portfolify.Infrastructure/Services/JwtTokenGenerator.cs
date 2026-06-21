@@ -17,7 +17,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         _configuration = configuration;
     }
 
-    public string GenerateToken(User user, string tenantIdentifier)
+    public string GenerateToken(User user)
     {
         var key = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Secret Key is not configured.");
         var issuer = _configuration["Jwt:Issuer"] ?? "Portfolify";
@@ -38,8 +38,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Role, user.Role),
-            new("TenantId", user.TenantId.ToString()),
-            new("TenantIdentifier", tenantIdentifier)
+            new("Username", user.Username)
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor

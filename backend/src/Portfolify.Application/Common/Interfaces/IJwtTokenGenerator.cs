@@ -4,5 +4,5 @@ namespace Portfolify.Application.Common.Interfaces;
 
 public interface IJwtTokenGenerator
 {
-    string GenerateToken(User user, string tenantIdentifier);
+    string GenerateToken(User user);
 }

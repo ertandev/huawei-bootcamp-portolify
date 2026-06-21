@@ -2,10 +2,10 @@ using Portfolify.Domain.Common;
 
 namespace Portfolify.Domain.Entities;
 
-public class DeveloperProfile : BaseEntity, IMustHaveTenant
+public class DeveloperProfile : BaseEntity
 {
-    public Guid TenantId { get; set; }
-    public Tenant Tenant { get; set; } = null!;
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
     
     public string FullName { get; set; } = null!;
     public string Title { get; set; } = null!; // e.g., Senior Full Stack Developer

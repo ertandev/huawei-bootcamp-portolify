@@ -40,11 +40,12 @@ public class CreateDeveloperProfileCommandHandler : IRequestHandler<CreateDevelo
 
     public async Task<Guid> Handle(CreateDeveloperProfileCommand request, CancellationToken cancellationToken)
     {
-        var tenantId = _currentUserService.TenantId ?? throw new UnauthorizedAccessException("Tenant is not identified.");
+        var userIdStr = _currentUserService.UserId ?? throw new UnauthorizedAccessException("User is not identified.");
+        var userId = Guid.Parse(userIdStr);
 
         var entity = new DeveloperProfile
         {
-            TenantId = tenantId,
+            UserId = userId,
             FullName = request.FullName,
             Title = request.Title,
             Bio = request.Bio,

@@ -41,7 +41,6 @@ public class EndorseSkillCommandHandler : IRequestHandler<EndorseSkillCommand, G
             throw new KeyNotFoundException($"Skill '{request.SkillId}' was not found.");
 
         var endorser = await _context.DeveloperProfiles
-            .IgnoreQueryFilters() // Endorser could be from a different tenant
             .FirstOrDefaultAsync(p => p.Id == request.EndorsedById, cancellationToken);
 
         if (endorser == null)
@@ -57,8 +56,7 @@ public class EndorseSkillCommandHandler : IRequestHandler<EndorseSkillCommand, G
         {
             SkillId = request.SkillId,
             EndorsedById = request.EndorsedById,
-            Comment = request.Comment,
-            TenantId = skill.TenantId
+            Comment = request.Comment
         };
 
         _context.SkillEndorsements.Add(endorsement);
