@@ -6,8 +6,7 @@ import Link from "next/link";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Lock, Mail, Loader2, ArrowLeft, Globe, User, Briefcase } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowLeft, Globe, User, Briefcase, Sparkles } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -64,146 +63,149 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 overflow-y-auto py-12 px-4 font-sans">
-      {/* Background Gradients */}
-      <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] rounded-full bg-violet-900/20 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-20%] w-[60%] h-[60%] rounded-full bg-fuchsia-900/20 blur-[120px] pointer-events-none" />
+    <div className="relative min-h-screen flex items-center justify-center bg-transparent text-foreground overflow-y-auto py-16 px-4 font-sans">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.005)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.005)_1px,transparent_1px)] bg-[size:80px_80px] pointer-events-none" />
 
-      <div className="absolute top-6 left-6 z-10">
+      {/* Top Navbar */}
+      <div className="absolute top-8 left-8 right-8 z-10 flex justify-between items-center">
         <Link href="/">
-          <Button variant="ghost" className="text-slate-400 hover:text-slate-100 gap-2">
-            <ArrowLeft className="h-4 w-4" /> Ana Sayfa
+          <Button variant="ghost" className="text-muted-foreground hover:text-foreground gap-1.5 rounded-full hover:bg-accent px-4 py-2 text-xs font-semibold">
+            <ArrowLeft className="h-3.5 w-3.5" /> Ana Sayfa
           </Button>
+        </Link>
+        <Link href="/" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-xs font-semibold">
+          <Sparkles className="h-3.5 w-3.5" /> Portfolify
         </Link>
       </div>
 
-      <div className="w-full max-w-lg relative z-10">
-        <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-xl shadow-2xl">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold tracking-tight text-white">
+      {/* Register Form Container */}
+      <div className="w-full max-w-xl relative z-10">
+        <div className="bg-card text-card-foreground rounded-xl p-8 md:p-10 shadow-lg border border-border space-y-8 animate-apple-in">
+          <div className="space-y-2 text-center">
+            <h1 className="text-2.5xl font-semibold tracking-tight">
               Hesap Oluştur
-            </CardTitle>
-            <CardDescription className="text-slate-400">
+            </h1>
+            <p className="text-xs text-muted-foreground">
               Kendi dijital kartvizit alanınızı ve portfolyonuzu saniyeler içinde kurun
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 rounded-lg bg-red-950/50 border border-red-800/50 text-red-400 text-sm text-center">
-                {error}
+            </p>
+          </div>
+
+          {error && (
+            <div className="p-3.5 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-xs text-center font-medium">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-muted-foreground ml-0.5">Kullanıcı Adı (Username)</label>
+              <div className="relative">
+                <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="vortex"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase())}
+                  required
+                  className="pl-11 py-5 bg-background border-input rounded-lg focus-visible:ring-ring focus-visible:ring-1 text-xs text-foreground placeholder:text-muted-foreground transition-all"
+                />
               </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Username */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Kullanıcı Adı (Username)</label>
+              <div className="bg-accent/40 border border-border rounded-lg p-2.5 flex items-center justify-between text-[11px] text-muted-foreground ml-0.5">
+                <span>Profil Adresiniz:</span>
+                <span className="text-foreground font-mono select-all">/?user={username || "kullanici-adi"}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Full Name */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-muted-foreground ml-0.5">Ad Soyad</label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <User className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="vortex"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9-]/g, "").toLowerCase())}
+                    placeholder="v0rteX"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     required
-                    className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-11 py-5 bg-background border-input rounded-lg focus-visible:ring-ring focus-visible:ring-1 text-xs text-foreground placeholder:text-muted-foreground transition-all"
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 block">
-                  Profil Adresiniz: <span className="text-violet-400 font-mono">http://localhost:3000/?user={username || "kullanici-adi"}</span>
-                </span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Full Name */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Ad Soyad</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
-                    <Input
-                      type="text"
-                      placeholder="v0rteX"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                      className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Title */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Ünvan</label>
-                  <div className="relative">
-                    <Briefcase className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
-                    <Input
-                      type="text"
-                      placeholder="Senior C# Developer"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      required
-                      className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">E-posta Adresi</label>
+              {/* Title */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-muted-foreground ml-0.5">Ünvan</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
+                  <Briefcase className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    type="email"
-                    placeholder="ornek@portfolify.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    placeholder="Senior C# Developer"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
+                    className="pl-11 py-5 bg-background border-input rounded-lg focus-visible:ring-ring focus-visible:ring-1 text-xs text-foreground placeholder:text-muted-foreground transition-all"
                   />
                 </div>
               </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Şifre (Min. 6 Karakter)</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    className="pl-10 bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-violet-500 focus:ring-violet-500"
-                  />
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-medium shadow-lg hover:shadow-violet-500/20 transition-all duration-300 py-6 mt-2"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Hesap oluşturuluyor...
-                  </>
-                ) : (
-                  "Hesap Oluştur ve Başla"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-2 text-center text-sm text-slate-400">
-            <div>
-              Zaten hesabınız var mı?{" "}
-              <Link href="/login" className="text-violet-400 hover:text-violet-300 font-medium underline underline-offset-4">
-                Giriş Yapın
-              </Link>
             </div>
-          </CardFooter>
-        </Card>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-muted-foreground ml-0.5">E-posta Adresi</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="ornek@portfolify.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="pl-11 py-5 bg-background border-input rounded-lg focus-visible:ring-ring focus-visible:ring-1 text-xs text-foreground placeholder:text-muted-foreground transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-muted-foreground ml-0.5">Şifre (En Az 6 Karakter)</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="pl-11 py-5 bg-background border-input rounded-lg focus-visible:ring-ring focus-visible:ring-1 text-xs text-foreground placeholder:text-muted-foreground transition-all"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full py-5 text-xs mt-4 font-semibold shadow-md"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Hesap oluşturuluyor
+                </>
+              ) : (
+                "Hesap Oluştur ve Başla"
+              )}
+            </Button>
+          </form>
+
+          <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border">
+            Zaten hesabınız var mı?{" "}
+            <Link href="/login" className="text-foreground hover:underline underline-offset-4 font-semibold ml-1">
+              Giriş Yapın
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

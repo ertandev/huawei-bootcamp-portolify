@@ -21,6 +21,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<SocialLink> SocialLinks => Set<SocialLink>();
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<SkillEndorsement> SkillEndorsements => Set<SkillEndorsement>();
+    public DbSet<Experience> Experiences => Set<Experience>();
+    public DbSet<Education> Educations => Set<Education>();
     public DbSet<Follower> Followers => Set<Follower>();
     public DbSet<User> Users => Set<User>();
 
@@ -48,12 +50,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasOne(f => f.FollowerProfile)
                 .WithMany(p => p.Following)
                 .HasForeignKey(f => f.FollowerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(f => f.FollowedProfile)
                 .WithMany(p => p.Followers)
                 .HasForeignKey(f => f.FollowedId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<SkillEndorsement>(entity =>
@@ -61,7 +63,23 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasOne(e => e.EndorsedBy)
                 .WithMany()
                 .HasForeignKey(e => e.EndorsedById)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Experience>(entity =>
+        {
+            entity.HasOne(e => e.DeveloperProfile)
+                .WithMany(p => p.Experiences)
+                .HasForeignKey(e => e.DeveloperProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Education>(entity =>
+        {
+            entity.HasOne(e => e.DeveloperProfile)
+                .WithMany(p => p.Educations)
+                .HasForeignKey(e => e.DeveloperProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 

@@ -10,6 +10,8 @@ public interface IApplicationDbContext
     DbSet<SocialLink> SocialLinks { get; }
     DbSet<Skill> Skills { get; }
     DbSet<SkillEndorsement> SkillEndorsements { get; }
+    DbSet<Experience> Experiences { get; }
+    DbSet<Education> Educations { get; }
     DbSet<Follower> Followers { get; }
     DbSet<User> Users { get; }
 

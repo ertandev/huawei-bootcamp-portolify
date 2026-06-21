@@ -24,6 +24,8 @@ public class DeveloperProfileDetailsDto
     public List<ProjectDto> Projects { get; set; } = new();
     public List<SocialLinkDto> SocialLinks { get; set; } = new();
     public List<SkillDto> Skills { get; set; } = new();
+    public List<ExperienceDto> Experiences { get; set; } = new();
+    public List<EducationDto> Educations { get; set; } = new();
 }
 
 public class ProjectDto
@@ -44,6 +46,30 @@ public class SocialLinkDto
     public string PlatformName { get; set; } = null!;
     public string Url { get; set; } = null!;
     public string? IconName { get; set; }
+}
+
+public class ExperienceDto
+{
+    public Guid Id { get; set; }
+    public string Company { get; set; } = null!;
+    public string Title { get; set; } = null!;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public string? Description { get; set; }
+    public string? Location { get; set; }
+    public int DisplayOrder { get; set; }
+}
+
+public class EducationDto
+{
+    public Guid Id { get; set; }
+    public string School { get; set; } = null!;
+    public string Degree { get; set; } = null!;
+    public string FieldOfStudy { get; set; } = null!;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public string? Description { get; set; }
+    public int DisplayOrder { get; set; }
 }
 
 public class SkillDto
@@ -84,6 +110,8 @@ public class GetDeveloperProfileDetailsQueryHandler : IRequestHandler<GetDevelop
                 .AsNoTracking()
                 .Include(p => p.Projects)
                 .Include(p => p.SocialLinks)
+                .Include(p => p.Experiences)
+                .Include(p => p.Educations)
                 .Include(p => p.Skills)
                     .ThenInclude(s => s.Endorsements)
                         .ThenInclude(e => e.EndorsedBy)
@@ -98,6 +126,8 @@ public class GetDeveloperProfileDetailsQueryHandler : IRequestHandler<GetDevelop
                     .AsNoTracking()
                     .Include(p => p.Projects)
                     .Include(p => p.SocialLinks)
+                    .Include(p => p.Experiences)
+                    .Include(p => p.Educations)
                     .Include(p => p.Skills)
                         .ThenInclude(s => s.Endorsements)
                             .ThenInclude(e => e.EndorsedBy)
@@ -155,6 +185,32 @@ public class GetDeveloperProfileDetailsQueryHandler : IRequestHandler<GetDevelop
                             EndorsedByName = e.EndorsedBy.FullName,
                             Comment = e.Comment
                         }).ToList()
+                }).ToList(),
+            Experiences = profile.Experiences
+                .OrderByDescending(ex => ex.StartDate)
+                .Select(ex => new ExperienceDto
+                {
+                    Id = ex.Id,
+                    Company = ex.Company,
+                    Title = ex.Title,
+                    StartDate = ex.StartDate,
+                    EndDate = ex.EndDate,
+                    Description = ex.Description,
+                    Location = ex.Location,
+                    DisplayOrder = ex.DisplayOrder
+                }).ToList(),
+            Educations = profile.Educations
+                .OrderByDescending(ed => ed.StartDate)
+                .Select(ed => new EducationDto
+                {
+                    Id = ed.Id,
+                    School = ed.School,
+                    Degree = ed.Degree,
+                    FieldOfStudy = ed.FieldOfStudy,
+                    StartDate = ed.StartDate,
+                    EndDate = ed.EndDate,
+                    Description = ed.Description,
+                    DisplayOrder = ed.DisplayOrder
                 }).ToList()
         };
     }

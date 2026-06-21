@@ -18,6 +18,8 @@ public class DeveloperProfile : BaseEntity
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<SocialLink> SocialLinks { get; set; } = new List<SocialLink>();
     public ICollection<Skill> Skills { get; set; } = new List<Skill>();
+    public ICollection<Experience> Experiences { get; set; } = new List<Experience>();
+    public ICollection<Education> Educations { get; set; } = new List<Education>();
     public ICollection<Follower> Followers { get; set; } = new List<Follower>(); // People following this developer
     public ICollection<Follower> Following { get; set; } = new List<Follower>(); // People this developer follows
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Portfolify.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Portfolify.Infrastructure.Persistence;
 namespace Portfolify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260621131035_AddCascadeDeleteOnFollowers")]
+    partial class AddCascadeDeleteOnFollowers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,109 +77,6 @@ namespace Portfolify.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("DeveloperProfiles");
-                });
-
-            modelBuilder.Entity("Portfolify.Domain.Entities.Education", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Degree")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("DeveloperProfileId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FieldOfStudy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("School")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeveloperProfileId");
-
-                    b.ToTable("Educations");
-                });
-
-            modelBuilder.Entity("Portfolify.Domain.Entities.Experience", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("DeveloperProfileId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("LastModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Location")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeveloperProfileId");
-
-                    b.ToTable("Experiences");
                 });
 
             modelBuilder.Entity("Portfolify.Domain.Entities.Follower", b =>
@@ -429,28 +329,6 @@ namespace Portfolify.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Portfolify.Domain.Entities.Education", b =>
-                {
-                    b.HasOne("Portfolify.Domain.Entities.DeveloperProfile", "DeveloperProfile")
-                        .WithMany("Educations")
-                        .HasForeignKey("DeveloperProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DeveloperProfile");
-                });
-
-            modelBuilder.Entity("Portfolify.Domain.Entities.Experience", b =>
-                {
-                    b.HasOne("Portfolify.Domain.Entities.DeveloperProfile", "DeveloperProfile")
-                        .WithMany("Experiences")
-                        .HasForeignKey("DeveloperProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DeveloperProfile");
-                });
-
             modelBuilder.Entity("Portfolify.Domain.Entities.Follower", b =>
                 {
                     b.HasOne("Portfolify.Domain.Entities.DeveloperProfile", "FollowedProfile")
@@ -524,10 +402,6 @@ namespace Portfolify.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Portfolify.Domain.Entities.DeveloperProfile", b =>
                 {
-                    b.Navigation("Educations");
-
-                    b.Navigation("Experiences");
-
                     b.Navigation("Followers");
 
                     b.Navigation("Following");
