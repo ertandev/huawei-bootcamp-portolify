@@ -1,0 +1,35 @@
+## [Common IDE Settings]
+.vscode/
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## [Build Artifacts - .NET]
+**/bin/
+**/obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+## [User Secrets & Databases]
+*.db
+*.db-journal
+*.local.json
+
+## [OS Cache Files]
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+## [Node/Frontend - optional future]
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
