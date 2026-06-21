@@ -24,6 +24,14 @@ public class CurrentUserService : ICurrentUserService
             {
                 return tenantId;
             }
+
+            // Fallback: read from authenticated user claims
+            var tenantIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirstValue("TenantId");
+            if (Guid.TryParse(tenantIdClaim, out var parsedTenantId))
+            {
+                return parsedTenantId;
+            }
+
             return null;
         }
     }

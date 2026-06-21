@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolify.Application.Features.SocialLinks.Commands;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Portfolify.WebApi.Controllers;
 
+[Authorize]
 public class SocialLinkController : ApiControllerBase
 {
     [HttpPost]

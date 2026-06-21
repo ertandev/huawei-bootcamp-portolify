@@ -23,6 +23,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<SkillEndorsement> SkillEndorsements => Set<SkillEndorsement>();
     public DbSet<Follower> Followers => Set<Follower>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,6 +35,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<SocialLink>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
         modelBuilder.Entity<Skill>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
         modelBuilder.Entity<SkillEndorsement>().HasQueryFilter(p => !_currentUserService.TenantId.HasValue || p.TenantId == _currentUserService.TenantId);
+        modelBuilder.Entity<User>().HasQueryFilter(u => !_currentUserService.TenantId.HasValue || u.TenantId == _currentUserService.TenantId);
 
         // Configure relations
         modelBuilder.Entity<Follower>(entity =>

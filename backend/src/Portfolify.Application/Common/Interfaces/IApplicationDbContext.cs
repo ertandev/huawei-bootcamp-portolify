@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<Skill> Skills { get; }
     DbSet<SkillEndorsement> SkillEndorsements { get; }
     DbSet<Follower> Followers { get; }
+    DbSet<User> Users { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

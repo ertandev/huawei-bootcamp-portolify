@@ -4,8 +4,11 @@ using Portfolify.Application.Features.DeveloperProfiles.Commands;
 using Portfolify.Application.Features.DeveloperProfiles.DTOs;
 using Portfolify.Application.Features.DeveloperProfiles.Queries;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Portfolify.WebApi.Controllers;
 
+[Authorize]
 public class DeveloperProfileController : ApiControllerBase
 {
     [HttpPost]
@@ -26,6 +29,7 @@ public class DeveloperProfileController : ApiControllerBase
         return NoContent();
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<DeveloperProfileDto>> Get(Guid id)
     {
@@ -36,6 +40,7 @@ public class DeveloperProfileController : ApiControllerBase
         return result;
     }
 
+    [AllowAnonymous]
     [HttpGet("details")]
     public async Task<ActionResult<DeveloperProfileDetailsDto>> GetDetails()
     {

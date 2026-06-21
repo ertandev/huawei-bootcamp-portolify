@@ -19,6 +19,10 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
+        // Register Identity Services
+        services.AddScoped<IJwtTokenGenerator, Services.JwtTokenGenerator>();
+        services.AddScoped<IPasswordHasher, Services.PasswordHasher>();
+
         return services;
     }
 }

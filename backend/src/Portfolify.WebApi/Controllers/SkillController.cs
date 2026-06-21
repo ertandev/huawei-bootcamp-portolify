@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolify.Application.Features.Skills.Commands;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Portfolify.WebApi.Controllers;
 
+[Authorize]
 public class SkillController : ApiControllerBase
 {
     [HttpPost]
@@ -18,6 +21,7 @@ public class SkillController : ApiControllerBase
         return NoContent();
     }
 
+    [AllowAnonymous]
     [HttpPost("endorse")]
     public async Task<ActionResult<Guid>> Endorse(EndorseSkillCommand command)
     {

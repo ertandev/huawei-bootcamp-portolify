@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolify.Application.Features.Tenants.Commands;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Portfolify.WebApi.Controllers;
 
+[Authorize]
 public class TenantController : ApiControllerBase
 {
     [HttpPost]
