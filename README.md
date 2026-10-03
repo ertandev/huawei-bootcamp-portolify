@@ -11,7 +11,7 @@ Portfolify is a modern, multi-tenant digital business card and social platform t
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## <img src="https://api.iconify.design/lucide:layers.svg?color=%23a78bfa" width="20" height="20" align="center" /> Tech Stack & Architecture
 
 The project is split into a clean backend service and a highly interactive frontend application:
 
@@ -34,17 +34,17 @@ A modern user interface built using the latest web standards:
 
 ---
 
-## ✨ Key Features
+## <img src="https://api.iconify.design/lucide:sparkles.svg?color=%23818cf8" width="20" height="20" align="center" /> Key Features
 
-- **Multi-Tenant (SaaS) Isolation:** Uses a *Shared Database, Shared Schema* model. Tenant separation is enforced dynamically at the database query level using EF Core **Global Query Filters** mapping to tenant identifiers.
-- **Dynamic Tenant Resolution:** Resolves tenants via custom HTTP Headers (`X-Tenant`) or sub-domains (e.g., `john-doe.portfolify.com`) on incoming API requests.
-- **CQRS Pattern:** MediatR is used to segregate read and write operations, keeping handlers lightweight, testable, and compliant with Single Responsibility Principles (SRP).
-- **Social Interaction Capabilities:** Features a follower/following system and skill endorsement capabilities that span across tenants.
-- **Validation Pipeline:** Pre-validates all incoming commands in the MediatR request pipeline using FluentValidation before execution.
+- <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2338bdf8" width="16" height="16" align="center" /> **Multi-Tenant (SaaS) Isolation:** Uses a *Shared Database, Shared Schema* model. Tenant separation is enforced dynamically at the database query level using EF Core **Global Query Filters** mapping to tenant identifiers.
+- <img src="https://api.iconify.design/lucide:globe.svg?color=%2334d399" width="16" height="16" align="center" /> **Dynamic Tenant Resolution:** Resolves tenants via custom HTTP Headers (`X-Tenant`) or sub-domains (e.g., `john-doe.portfolify.com`) on incoming API requests.
+- <img src="https://api.iconify.design/lucide:git-branch.svg?color=%23a78bfa" width="16" height="16" align="center" /> **CQRS Pattern:** MediatR is used to segregate read and write operations, keeping handlers lightweight, testable, and compliant with Single Responsibility Principles (SRP).
+- <img src="https://api.iconify.design/lucide:users.svg?color=%23fbbf24" width="16" height="16" align="center" /> **Social Interaction Capabilities:** Features a follower/following system and skill endorsement capabilities that span across tenants.
+- <img src="https://api.iconify.design/lucide:check-circle-2.svg?color=%2334d399" width="16" height="16" align="center" /> **Validation Pipeline:** Pre-validates all incoming commands in the MediatR request pipeline using FluentValidation before execution.
 
 ---
 
-## 🚀 Getting Started
+## <img src="https://api.iconify.design/lucide:play.svg?color=%2334d399" width="20" height="20" align="center" /> Getting Started
 
 Follow these steps to run the application locally on your computer:
 
@@ -109,7 +109,7 @@ The backend API server will start and be available at the specified local ports 
 
 ---
 
-## 📐 Design Decisions & API Reference
+## <img src="https://api.iconify.design/lucide:book-open.svg?color=%2338bdf8" width="20" height="20" align="center" /> Design Decisions & API Reference
 For more technical details, design logs, and API routes:
 - Check out [Architecture Decisions](docs/architecture_decisions.md)
 - Check out [API Endpoints Reference](docs/api_endpoints.md)
@@ -117,5 +117,5 @@ For more technical details, design logs, and API routes:
 
 ---
 
-## 📄 License
+## <img src="https://api.iconify.design/lucide:file-text.svg?color=%2394a3b8" width="20" height="20" align="center" /> License
 This project is licensed under the MIT License - see the LICENSE file for details.
